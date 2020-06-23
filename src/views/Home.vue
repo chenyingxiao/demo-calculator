@@ -26,33 +26,79 @@ export default {
       firstNum: '',
       twoNum: '',
       symbol: '',
-      result: 0,
-      equation: ''
+      equation: '',
+      result: 0
+
     }
   },
   methods: {
     btnClick (val) {
-      if('0123456789.'.indexOf(val) == -1){
+      if ('0123456789.'.indexOf(val) === -1) {
+        if ('+-*/'.indexOf(val) !== -1) {
+          this.symbol = val
+          this.equation = this.firstNum + this.symbol
+          return;
+        }
         if (val === '=') {
-          if (!this.twoNum){
-            this.twoNum = this.result
+          if (!this.firstNum) {
+            this.equation = this.result + val
+            this.firstNum = ''
+          } else {
+            this.equation = this.firstNum + this.symbol + this.twoNum + val
+            this.firstNum = this.result = eval(this.firstNum + this.symbol + this.twoNum)
+            this.twoNum = ''
           }
-          this.equation = this.firstNum + this.symbol + this.twoNum + val
-          this.result = eval(this.firstNum + this.symbol + this.twoNum)
-          this.firstNum = this.twoNum = this.symbol = ''
+          return;
+        }
+        if (val === '&#xe627;') {
+          return;
+        }
+        if (val === '%') {
+          if (!this.symbol) {
+            this.firstNum = ''
+            this.result = this.equation = 0
+            return
+          }
+          this.result = this.twoNum = this.twoNum/100
+          return;
+        }
+        if (val === 'CE') {
+          this.firstNum = this.twoNum = this.symbol = this.equation = ''
+          this.result = 0
+          return;
+        }
+        if (val === 'C') {
+          this.firstNum = this.twoNum = this.symbol = this.equation = ''
+          this.result = 0
+          return;
+        }
+        if (val === '1/x') {
+          this.equation = `1/(${this.result})`
+          this.firstNum = this.result = 1 / this.result
+          return;
+        }
+        if (val === 'x*x') {
+          this.equation = `sqr(${this.result})`
+          this.firstNum = this.result = this.result * this.result
+          return;
+        }
+        if (val === '2√') {
+          this.equation = `2√(${this.result})`
+          this.firstNum = this.result = Math.sqrt(this.result)
+          return;
+        }
+        if (val === '+/-') {
+          this.result = this.firstNum = Number(-this.firstNum)
+          return;
+        }
+
+      } else {
+        if (!this.symbol) {
+          this.result = this.firstNum += val
           return
         }
-        this.symbol = val
-        this.equation = this.firstNum + this.symbol
-      } else {
-        if(this.symbol){
-          this.result = this.twoNum += val
-        } else {
-          this.result = this.firstNum += val
-          this.equation = ''
-        }
+        this.result = this.twoNum += val
       }
-
     }
   }
 }
@@ -67,6 +113,10 @@ export default {
         align-items: center;
         height: 5rem;
         width: 100%;
+    }
+    .input-02{
+        font-weight: 600;
+        font-size: 3rem;
     }
     .btn-item{
         width: 25%;
